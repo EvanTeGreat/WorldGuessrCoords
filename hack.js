@@ -12,19 +12,18 @@
     function extractCoordinates() {
         try {
             console.log("Extracting coordinates...");
-            const iframe = document.evaluate('/html/body/div/main/div[1]/iframe', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            const iframe = document.querySelector("iframe"); // Simpler than XPath
             if (iframe) {
                 console.log("Iframe found:", iframe);
-                const src = iframe.getAttribute('src');
+                console.log("Iframe HTML:", iframe.outerHTML);
+                const src = iframe.getAttribute("src");
                 console.log("Iframe src:", src);
                 if (src) {
-                    const urlParams = new URLSearchParams('?' + src.split('?')[1]);
-                    const lat = urlParams.get('lat');
-                    const lng = urlParams.get('long');
-                    if (lat && lng) {
-                        console.log("Extracted coordinates:", lat, lng);
-                        return { lat: parseFloat(lat), lng: parseFloat(lng) };
-                    }
+                    const urlParams = new URLSearchParams("?" + src.split("?")[1]);
+                    const lat = urlParams.get("lat");
+                    const lng = urlParams.get("long");
+                    console.log("Extracted coordinates:", lat, lng);
+                    return lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : null;
                 }
             }
         } catch (error) {
@@ -52,6 +51,7 @@
             flex-direction:column;
             box-shadow: 3px 3px 10px rgba(0,0,0,0.3);
             font-family: Arial, sans-serif;
+            display:block;
         `;
         document.body.appendChild(container);
         console.log("Created UI container");
@@ -90,7 +90,7 @@
         L.marker([coordinates.lat, coordinates.lng])
             .bindPopup(`Lat: ${coordinates.lat}<br>Lng: ${coordinates.lng}`)
             .addTo(map);
-       
+
         console.log("Map initialized successfully!");
     }
 
@@ -105,8 +105,11 @@
             let script = document.createElement("script");
             script.src = "https://unpkg.com/leaflet/dist/leaflet.js";
             script.onload = function() {
-                console.log("Leaflet.js loaded!");
+                console.log("Leaflet.js loaded! Running bookmarklet...");
                 runBookmarklet();
+            };
+            script.onerror = function() {
+                console.error("Leaflet.js failed to load!");
             };
             document.body.appendChild(script);
         } else {
