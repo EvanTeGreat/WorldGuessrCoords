@@ -63,7 +63,7 @@
         // Define the custom marker icon
         let customIcon = L.icon({
             iconUrl: "https://raw.githubusercontent.com/EvanTeGreat/HackGuessr/refs/heads/gh-pages/marker.png",
-            iconSize: [16, 32],  // Adjust size as needed
+            iconSize: [20, 32],  // Adjust size as needed
             iconAnchor: [16, 32],  // Adjust anchor point
             popupAnchor: [0, -32]  // Positioning for the popup
         });
