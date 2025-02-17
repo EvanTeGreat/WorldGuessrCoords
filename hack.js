@@ -1,14 +1,19 @@
-(function() {
-    console.log("Bookmarklet script loaded, waiting for Right Shift...");
+(function () {
+    console.log("Bookmarklet script loaded, initializing map...");
 
-    document.addEventListener("keydown", function(e) {
+    loadLeaflet();
+
+    document.addEventListener("keydown", function (e) {
         console.log("Key pressed:", e.key, "| Code:", e.code);
 
-        if (e.code === "ShiftRight") {
-            console.log("Right Shift detected! Running bookmarklet...");
-            loadLeaflet();
+        if (e.key.toLowerCase() === "r") {
+            console.log("R key detected! Reloading map...");
+            reloadBookmarklet();
         }
     });
+
+    let containerX = 10; // Default starting position
+    let containerY = 10;
 
     function loadLeaflet() {
         if (!window.L) {
@@ -20,7 +25,7 @@
 
             let script = document.createElement("script");
             script.src = "https://unpkg.com/leaflet/dist/leaflet.js";
-            script.onload = function() {
+            script.onload = function () {
                 console.log("Leaflet.js loaded!");
                 runBookmarklet();
             };
@@ -29,6 +34,15 @@
             console.log("Leaflet.js already loaded!");
             runBookmarklet();
         }
+    }
+
+    function reloadBookmarklet() {
+        let container = document.getElementById("bookmarklet-map-container");
+        if (container) {
+            containerX = container.offsetLeft;
+            containerY = container.offsetTop;
+        }
+        runBookmarklet();
     }
 
     function runBookmarklet() {
@@ -49,7 +63,7 @@
         L.marker([coordinates.lat, coordinates.lng])
             .bindPopup(`Lat: ${coordinates.lat}<br>Lng: ${coordinates.lng}`)
             .addTo(map);
-       
+
         console.log("Map initialized successfully!");
     }
 
@@ -60,25 +74,63 @@
         let container = document.createElement("div");
         container.id = "bookmarklet-map-container";
         container.style = `
-            position:fixed;
-            bottom:10px;
-            left:10px;
-            width:400px;
-            height:450px;
-            z-index:10000;
-            background:white;
-            border:2px solid black;
-            display:flex;
-            flex-direction:column;
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.3);
+            position: fixed;
+            left: ${containerX}px;
+            top: ${containerY}px;
+            width: 250px;
+            height: 280px;
+            z-index: 10000;
+            background: white;
+            border: 2px solid black;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
             font-family: Arial, sans-serif;
+            border-radius: 10px;
         `;
         document.body.appendChild(container);
 
+        let banner = document.createElement("div");
+        banner.id = "bookmarklet-banner";
+        banner.style = `
+            width: 100%;
+            height: 30px;
+            background: lightgreen;
+            cursor: grab;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        `;
+        banner.onmousedown = dragElement;
+        container.appendChild(banner);
+
         let mapDiv = document.createElement("div");
         mapDiv.id = "bookmarklet-map";
-        mapDiv.style = "width:100%; height:400px;";
+        mapDiv.style = "width: 100%; height: 250px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;";
         container.appendChild(mapDiv);
+    }
+
+    function dragElement(event) {
+        event.preventDefault();
+        let container = document.getElementById("bookmarklet-map-container");
+
+        let startX = event.clientX;
+        let startY = event.clientY;
+        let startLeft = container.offsetLeft;
+        let startTop = container.offsetTop;
+
+        document.onmousemove = function (e) {
+            let newX = startLeft + (e.clientX - startX);
+            let newY = startTop + (e.clientY - startY);
+            container.style.left = newX + "px";
+            container.style.top = newY + "px";
+            containerX = newX;
+            containerY = newY;
+        };
+
+        document.onmouseup = function () {
+            document.onmousemove = null;
+            document.onmouseup = null;
+        };
     }
 
     function extractCoordinates() {
