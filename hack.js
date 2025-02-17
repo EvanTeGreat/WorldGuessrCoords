@@ -51,7 +51,7 @@
         let coordinates = extractCoordinates();
 
         if (!coordinates) {
-            alert("No coordinates found! Make sure you're on a WorldGuessr game.");
+            alert("Make sure you're on a WorldGuessr game. Once you are, click r to reload.");
             return;
         }
 
@@ -60,11 +60,19 @@
             attribution: "&copy; OpenStreetMap contributors"
         }).addTo(map);
 
-        L.marker([coordinates.lat, coordinates.lng])
+        // Define the custom marker icon
+        let customIcon = L.icon({
+            iconUrl: "https://raw.githubusercontent.com/EvanTeGreat/HackGuessr/refs/heads/gh-pages/marker.png",
+            iconSize: [16, 32],  // Adjust size as needed
+            iconAnchor: [16, 32],  // Adjust anchor point
+            popupAnchor: [0, -32]  // Positioning for the popup
+        });
+
+        L.marker([coordinates.lat, coordinates.lng], { icon: customIcon })
             .bindPopup(`Lat: ${coordinates.lat}<br>Lng: ${coordinates.lng}`)
             .addTo(map);
 
-        console.log("Map initialized successfully!");
+        console.log("Map initialized successfully with custom marker!");
     }
 
     function createUI() {
