@@ -4,3 +4,6 @@ just run it for the cheat
 
 click r to reset the map
 green banner is draggable
+
+
+if making a bookmarklet and running it doesn't work, enter the code in the console of inspect element
