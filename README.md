@@ -2,3 +2,5 @@ this is a javascript bookmarklet for worldguessr which is basically the free ver
 
 just run it for the cheat
 
+click r to reset the map
+green banner is draggable
